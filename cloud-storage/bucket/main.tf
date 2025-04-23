@@ -45,7 +45,7 @@ resource "google_storage_bucket_access_control" "bucket_acl" {
   entity = "allUsers"
 }
 
-output "lab_bucket_name" {
+output "name" {
   description = "The name of the created bucket."
   value       = google_storage_bucket.bucket.name
 }

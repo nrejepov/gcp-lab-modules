@@ -21,7 +21,7 @@ variable "display_name" {
 }
 
 locals {
-  project_name    = contains(var.project_id, ":") ? join(".", reverse(split(":", var.project_id))) : var.project_id
+  project_name    = length(split(":", var.project_id)) > 1 ? join(".", reverse(split(":", var.project_id))) : var.project_id
   sa_identifier   = substr("${local.project_name}-${var.identifier_suffix}", 0, 30)
   sa_display_name = var.display_name != null ? var.display_name : local.sa_identifier
 }

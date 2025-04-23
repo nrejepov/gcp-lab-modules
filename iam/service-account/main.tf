@@ -33,10 +33,10 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_project_iam_member" "iam_bindings" {
-  for_each = toset(var.roles)
+  count = length(var.roles)
 
   project = var.project_id
-  role    = each.value
+  role    = var.roles[count.index]
   member  = "serviceAccount:${google_service_account.service_account.email}"
 }
 

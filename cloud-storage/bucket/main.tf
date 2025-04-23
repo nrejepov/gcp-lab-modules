@@ -22,8 +22,15 @@ variable "versioning_enabled" {
   default     = false
 }
 
+
+resource "time_static" "current_time" {}
+
+locals {
+  epoch_timestamp = time_static.current_time.unix
+}
+
 resource "google_storage_bucket" "bucket" {
-  name          = var.bucket_name != null ? var.bucket_name : "${var.name_prefix}-${timestamp()}"
+  name          = var.bucket_name != null ? var.bucket_name : "${var.name_prefix}-${local.epoch_timestamp}"
   location      = var.location
   storage_class = "STANDARD"
 

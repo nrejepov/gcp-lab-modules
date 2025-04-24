@@ -36,7 +36,7 @@ resource "null_resource" "delay_after_creation" {
   depends_on = [google_service_account.service_account]
 
   provisioner "local-exec" {
-    command = "sleep 10"
+    command = "sleep 5"
   }
 }
 

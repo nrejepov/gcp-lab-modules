@@ -30,6 +30,11 @@ variable "startup_script" {
     type        = string
 }
 
+variable "service_account_email" {
+    description = "The email of the service account to attach to the instance"
+    type        = string
+}
+
 # VM instance resource
 resource "google_compute_instance" "ca_lab_vm" {
     name         = "ca-lab-vm"
@@ -51,7 +56,7 @@ resource "google_compute_instance" "ca_lab_vm" {
     metadata_startup_script = var.startup_script
 
     service_account {
-        email  = module.service_account.email
+        email  = var.service_account_email
         scopes = ["https://www.googleapis.com/auth/cloud-platform"]
     }
 }

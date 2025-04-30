@@ -60,3 +60,8 @@ resource "google_compute_instance" "ca_lab_vm" {
         scopes = ["https://www.googleapis.com/auth/cloud-platform"]
     }
 }
+
+output "external_ip" {
+    description = "The external IP address of the instance"
+    value       = google_compute_instance.ca_lab_vm.network_interface[0].access_config[0].nat_ip
+}

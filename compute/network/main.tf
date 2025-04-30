@@ -11,37 +11,28 @@ variable "cidr_range" {
     type        = string
 }
 
-variable "name" {
+variable "network_name" {
     description = "The name of the network"
     type        = string
     default     = "vm-network"
 }
-
+variable "subnet_name" {
+    description = "The name of the subnetwork"
+    type        = string
+    default     = "vm-subnet"
+}
 # Network
 resource "google_compute_network" "vm_network" {
-  name                    = var.name
+  name                    = var.network_name
   auto_create_subnetworks = false
 }
 
 # Subnetwork
 resource "google_compute_subnetwork" "vm_subnet" {
-  name          = "vm-subnet"
+  name          = var.subnet_name
   network       = google_compute_network.vm_network.id
   region        = var.region
   ip_cidr_range = var.cidr_range
-}
-
-# Firewall rule to allow SSH access
-resource "google_compute_firewall" "vm_network_allow_ssh" {
-  name    = "vm-network-allow-ssh"
-  network = google_compute_network.vm_network.id
-
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
-
-  source_ranges = ["0.0.0.0/0"]
 }
 
 # Outputs

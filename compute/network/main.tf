@@ -11,9 +11,15 @@ variable "cidr_range" {
     type        = string
 }
 
+variable "name" {
+    description = "The name of the network"
+    type        = string
+    default     = "vm-network"
+}
+
 # Network
 resource "google_compute_network" "vm_network" {
-  name                    = "vm-network"
+  name                    = var.name
   auto_create_subnetworks = false
 }
 

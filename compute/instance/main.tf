@@ -1,5 +1,11 @@
 # Variables
 
+variable "metadata" {
+  description = "Metadata key/value pairs to make available from within the instance"
+  type        = map(string)
+  default     = {}
+}
+
 variable "machine_type" {
     description = "The machine type to use for the instance"
     type        = string

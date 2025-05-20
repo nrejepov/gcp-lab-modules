@@ -1,7 +1,7 @@
 # Variables
 
 variable "container_image" {
-  description = "Container image to deploy (e.g., gcr.io/google-samples/hello-app:2.0)"
+  description = "Container image to deploy"
   type        = string
   default     = "gcr.io/google-samples/hello-app:2.0"
 }
@@ -32,24 +32,16 @@ variable "container_env" {
 variable "cos_image_name" {
   description = "The specific COS image to use"
   type        = string
-  default     = null # Will use the latest stable COS image
+  default     = null
 }
 
 variable "restart_policy" {
-  description = "Restart policy for the container (Always, OnFailure, Never)"
+  description = "Restart policy for the container"
   type        = string
   default     = "Always"
 }
 
-# VM instance resource
-module "vm" {
-  source                = "git::https://github.com/nrejepov/gcp-lab-modules.git//compute/instance?ref=main"
-  network_id            = module.network.network_id
-  subnetwork_id         = module.network.subnet_id
-  service_account_email = module.service_account.email
-}
-
-# Add the container configuration
+# Container configuration
 module "gce-container" {
   source  = "terraform-google-modules/container-vm/google"
   version = "~> 3.2"
@@ -57,27 +49,25 @@ module "gce-container" {
   container = {
     image = var.container_image
     ports = var.container_ports
+    env   = var.container_env
   }
   
-  # COS image
   cos_image_name = var.cos_image_name
   restart_policy = var.restart_policy
 }
 
-# Add the container metadata to the VM
-resource "google_compute_instance_metadata" "container_metadata" {
-  instance = module.vm.instance_id
-  
-  metadata = {
-    gce-container-declaration = module.gce-container.metadata_value
-  }
+# Outputs
+output "metadata_value" {
+  description = "The container declaration metadata value"
+  value       = module.gce-container.metadata_value
 }
 
-# Add container-specific labels
-resource "google_compute_instance_labels" "container_labels" {
-  instance = module.vm.instance_id
-  
-  labels = {
-    container-vm = module.gce-container.vm_container_label
-  }
+output "vm_container_label" {
+  description = "The container VM label"
+  value       = module.gce-container.vm_container_label
+}
+
+output "cos_image_name" {
+  description = "The COS image name"
+  value       = module.gce-container.cos_image_name
 }

@@ -1,9 +1,9 @@
 # Variables
 
 variable "container_image" {
-  description = "Container image to deploy"
+  description = "Container image to deploy (e.g., gcr.io/google-samples/hello-app:2.0)"
   type        = string
-  default     = "gcr.io/google-samples/hello-app:2.0"
+  default     = "gcr.io/google-samples/hello-app:1.0"
 }
 
 variable "container_ports" {
@@ -32,42 +32,44 @@ variable "container_env" {
 variable "cos_image_name" {
   description = "The specific COS image to use"
   type        = string
-  default     = null
+  default     = "cos-stable-77-12371-89-0"
 }
 
 variable "restart_policy" {
-  description = "Restart policy for the container"
+  description = "Restart policy for the container (Always, OnFailure, Never)"
   type        = string
   default     = "Always"
 }
 
-# Container configuration
+# Add the container configuration
 module "gce-container" {
   source  = "terraform-google-modules/container-vm/google"
-  version = "~> 3.2"
+  version = "~> 3.0"
   
   container = {
     image = var.container_image
     ports = var.container_ports
-    env   = var.container_env
   }
   
+  # COS image
   cos_image_name = var.cos_image_name
   restart_policy = var.restart_policy
 }
 
-# Outputs
-output "metadata_value" {
-  description = "The container declaration metadata value"
-  value       = module.gce-container.metadata_value
+# Add the container metadata to the VM
+resource "google_compute_instance_metadata" "container_metadata" {
+  instance = module.vm.instance_id
+  
+  metadata = {
+    gce-container-declaration = module.gce-container.metadata_value
+  }
 }
 
-output "vm_container_label" {
-  description = "The container VM label"
-  value       = module.gce-container.vm_container_label
-}
-
-output "cos_image_name" {
-  description = "The COS image name"
-  value       = module.gce-container.cos_image_name
+# Add container-specific labels
+resource "google_compute_instance_labels" "container_labels" {
+  instance = module.vm.instance_id
+  
+  labels = {
+    container-vm = module.gce-container.vm_container_label
+  }
 }

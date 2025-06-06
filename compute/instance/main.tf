@@ -47,11 +47,18 @@ variable "instance_name" {
   default     = "ca-lab-vm"
 }
 
+variable "network_ip" {
+  description = "The internal IP address to assign to the instance's primary network interface."
+  type        = string
+  default     = null # Set to null to make it optional
+}
+
 # VM instance resource
 resource "google_compute_instance" "ca_lab_vm" {
     name         = var.instance_name
     machine_type = var.machine_type
     zone         = var.zone
+    network_ip   = var.network_ip
 
     boot_disk {
         initialize_params {

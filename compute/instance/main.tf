@@ -58,7 +58,6 @@ resource "google_compute_instance" "ca_lab_vm" {
     name         = var.instance_name
     machine_type = var.machine_type
     zone         = var.zone
-    network_ip   = var.network_ip
 
     boot_disk {
         initialize_params {
@@ -69,6 +68,7 @@ resource "google_compute_instance" "ca_lab_vm" {
     network_interface {
         network    = var.network_id
         subnetwork = var.subnetwork_id
+        network_ip   = var.network_ip
         access_config {}
     }
 
